@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Bulk Student Upload</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 40px auto;
+    }
+
+    .header,
+    .upload-card,
+    .result-card {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .description {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .format {
+      background: #f1f3f5;
+      padding: 15px;
+      border-radius: 6px;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+
+    .format code {
+      white-space: nowrap;
+    }
+
+    input[type="file"] {
+      display: block;
+      margin: 20px 0;
+    }
+
+    button {
+      padding: 11px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      background: #1f6feb;
+      color: white;
+    }
+
+    button:hover {
+      background: #1557b0;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 20px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .progress-container {
+      margin-top: 25px;
+      display: none;
+    }
+
+    .progress-bar-background {
+      width: 100%;
+      height: 28px;
+      background: #e9ecef;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #1f6feb;
+      transition: width 0.2s ease;
+    }
+
+    .progress-text {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .status {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .success {
+      background: #e6f4ea;
+      color: #137333;
+    }
+
+    .error {
+      background: #ffe8ec;
+      color: #b00020;
+    }
+
+    .result-card {
+      display: none;
+    }
+
+    .result-card p {
+      margin: 10px 0;
+    }
+
+    .errors {
+      margin-top: 20px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .errors li {
+      margin-bottom: 8px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <a
+      href="/admin-dashboard"
+      class="back"
+    >
+      ← Back to Admin Dashboard
+    </a>
+
+    <div class="header">
+
+      <h1>
+        Bulk Student CSV Upload
+      </h1>
+
+      <p class="description">
+        Upload a CSV file to create multiple
+        student accounts and student profiles
+        at once.
+      </p>
+
+      <div class="format">
+
+        <strong>
+          Required CSV columns:
+        </strong>
+
+        <br><br>
+
+        <code>
+          name,email,password,rollNumber,enrollmentYear,department,semester
+        </code>
+
+      </div>
+
+    </div>
+
+    <div class="upload-card">
+
+      <form id="uploadForm">
+
+        <label for="csvFile">
+          Select CSV file:
+        </label>
+
+        <input
+          type="file"
+          id="csvFile"
+          name="file"
+          accept=".csv"
+          required
+        >
+
+        <button
+          type="submit"
+          id="uploadButton"
+        >
+          Upload Students
+        </button>
+
+      </form>
+
+      <div
+        id="status"
+        class="status"
+      ></div>
+
+      <div
+        id="progressContainer"
+        class="progress-container"
+      >
+
+        <div class="progress-bar-background">
+
+          <div
+            id="progressBar"
+            class="progress-bar"
+          ></div>
+
+        </div>
+
+        <div
+          id="progressText"
+          class="progress-text"
+        >
+          0%
+        </div>
+
+      </div>
+
+    </div>
+
+    <div
+      id="resultCard"
+      class="result-card"
+    >
+
+      <h2>
+        Upload Result
+      </h2>
+
+      <p>
+        <strong>Total rows:</strong>
+        <span id="totalRows">0</span>
+      </p>
+
+      <p>
+        <strong>Imported:</strong>
+        <span id="importedRows">0</span>
+      </p>
+
+      <p>
+        <strong>Skipped:</strong>
+        <span id="skippedRows">0</span>
+      </p>
+
+      <div class="errors">
+
+        <h3>
+          Skipped/Error Rows
+        </h3>
+
+        <ul id="errorList"></ul>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script src="/js/admin-bulk-upload.js"></script>
+
+</body>
+
+</html>

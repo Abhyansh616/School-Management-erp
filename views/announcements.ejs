@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Announcements - School ERP</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 40px auto;
+    }
+
+    .header {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .header h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      margin: 0;
+      color: #6b7280;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      text-decoration: none;
+      color: #2563eb;
+      font-weight: bold;
+    }
+
+    .admin-panel {
+      display: none;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .admin-panel h2 {
+      margin-top: 0;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    button {
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: bold;
+      background: #2563eb;
+      color: white;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    .announcements-section {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .announcements-section h2 {
+      margin-top: 0;
+    }
+
+    .announcement {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 15px;
+      background: #fafafa;
+    }
+
+    .announcement:last-child {
+      margin-bottom: 0;
+    }
+
+    .announcement h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .announcement-message {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .announcement-meta {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .live-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .empty-message {
+      color: #6b7280;
+      text-align: center;
+      padding: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <a
+      href="#"
+      id="backLink"
+      class="back-link"
+    >
+      ← Back to Dashboard
+    </a>
+
+    <div class="header">
+      <h1>School Announcements</h1>
+
+      <p>
+        Important announcements published by
+        the school administration.
+      </p>
+    </div>
+
+    <!-- ADMIN ONLY -->
+    <div
+      id="adminPanel"
+      class="admin-panel"
+    >
+      <h2>Publish Announcement</h2>
+
+      <form id="announcementForm">
+
+        <div class="form-group">
+          <label for="title">
+            Announcement Title
+          </label>
+
+          <input
+            type="text"
+            id="title"
+            maxlength="150"
+            placeholder="Enter announcement title"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="message">
+            Announcement Message
+          </label>
+
+          <textarea
+            id="message"
+            maxlength="5000"
+            placeholder="Enter announcement message"
+            required
+          ></textarea>
+        </div>
+
+        <button
+          type="submit"
+          id="publishButton"
+        >
+          Publish Announcement
+        </button>
+
+        <div
+          id="adminStatus"
+          class="status"
+        ></div>
+
+      </form>
+    </div>
+
+    <div class="announcements-section">
+
+      <span class="live-badge">
+        ● LIVE UPDATES ENABLED
+      </span>
+
+      <h2>Latest Announcements</h2>
+
+      <div id="announcementList">
+        <div class="empty-message">
+          Loading announcements...
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script src="/js/announcements.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Student Report Card</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 40px auto;
+    }
+
+    .header {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+    }
+
+    .header p {
+      margin: 0;
+      color: #666;
+    }
+
+    #error {
+      color: #b00020;
+      background: #ffe8ec;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .student-info,
+    .grades-section {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .student-info h2,
+    .grades-section h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    .student-info p {
+      margin: 10px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background: #f1f3f5;
+      font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #666;
+    }
+
+    .buttons {
+      margin-bottom: 20px;
+    }
+
+    .back-button,
+    .pdf-button {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      border: none;
+    }
+
+    .back-button {
+      background: #333;
+      color: white;
+    }
+
+    .back-button:hover {
+      background: #555;
+    }
+
+    .pdf-button {
+      background: #1f6feb;
+      color: white;
+      margin-left: 10px;
+    }
+
+    .pdf-button:hover {
+      background: #1557b0;
+    }
+
+    .pdf-button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="buttons">
+
+      <a
+        href="/student-dashboard"
+        class="back-button"
+      >
+        ← Back to Dashboard
+      </a>
+
+      <button
+        id="downloadPdfButton"
+        class="pdf-button"
+      >
+        Download PDF Report Card
+      </button>
+
+    </div>
+
+    <div class="header">
+
+      <h1>
+        Student Report Card
+      </h1>
+
+      <p>
+        View your academic performance and examination results.
+      </p>
+
+    </div>
+
+    <div id="error"></div>
+
+    <div id="reportCard">
+
+      <div class="loading">
+        Loading report card...
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="/js/report-card.js"></script>
+
+</body>
+</html>

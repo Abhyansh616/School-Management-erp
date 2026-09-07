@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Take Attendance</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 30px;
+      background: #f5f7fb;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .course-info {
+      margin-bottom: 25px;
+      padding: 15px;
+      background: #f1f3f6;
+      border-radius: 8px;
+    }
+
+    .student-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .student-info {
+      flex: 1;
+    }
+
+    .student-name {
+      font-weight: bold;
+    }
+
+    .roll-number {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .attendance-options {
+      display: flex;
+      gap: 20px;
+    }
+
+    .attendance-options label {
+      cursor: pointer;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .success {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .error {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .date-section {
+      margin-bottom: 20px;
+    }
+
+    input[type="date"] {
+      padding: 8px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Take Attendance</h1>
+
+    <div id="error" class="message"></div>
+
+    <div class="course-info">
+      <h2 id="courseTitle">
+        Loading course...
+      </h2>
+
+      <p id="courseDescription"></p>
+
+      <p>
+        <strong>Course ID:</strong>
+        <span id="courseIdDisplay"></span>
+      </p>
+    </div>
+
+    <div class="date-section">
+
+      <label for="attendanceDate">
+        <strong>Attendance Date:</strong>
+      </label>
+
+      <input
+        type="date"
+        id="attendanceDate"
+      >
+
+    </div>
+
+    <form id="attendanceForm">
+
+      <div id="studentList">
+        Loading students...
+      </div>
+
+      <button
+        type="submit"
+        id="submitButton"
+      >
+        Save Attendance
+      </button>
+
+    </form>
+
+    <div id="message" class="message"></div>
+
+  </div>
+
+  <script src="/js/take-attendance.js"></script>
+
+</body>
+</html>
