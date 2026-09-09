@@ -1,20 +1,20 @@
 # School Management ERP
 
-A full-stack School Management Enterprise Resource Planning (ERP) system built using Node.js, Express.js, MongoDB, EJS, JWT authentication, Socket.IO, Chart.js, PDFKit, and CSV processing.
+A full-stack **School Management Enterprise Resource Planning (ERP)** system built using **Node.js, Express.js, MongoDB, EJS, JWT, Socket.IO, Chart.js, PDFKit, and CSV processing**.
 
-The system provides role-based access for Administrators, Teachers, and Students while supporting attendance management, course management, grading, report cards, analytics, bulk student uploads, CSV exports, PDF reports, and real-time announcements.
+The system provides separate functionality for **Administrators, Teachers, and Students**, including course management, attendance, grading, report cards, analytics, bulk student uploads, CSV exports, PDF reports, and real-time announcements.
 
 ---
 
-## 1. Features
+# 1. Features
 
-### Authentication and Authorization
+## Authentication and Authorization
 
 * JWT-based authentication
 * Password hashing using bcrypt
 * Role-Based Access Control (RBAC)
 * Attribute-Based Access Control (ABAC)
-* Three user roles:
+* Three roles:
 
   * Admin
   * Teacher
@@ -22,10 +22,10 @@ The system provides role-based access for Administrators, Teachers, and Students
 * Active/inactive user accounts
 * Protected API routes
 
-### Admin Features
+## Admin Features
 
 * Admin dashboard
-* View school-wide analytics
+* School-wide analytics
 * Create courses
 * Assign teachers to courses
 * Enroll students into courses
@@ -36,19 +36,19 @@ The system provides role-based access for Administrators, Teachers, and Students
 * Export attendance reports
 * View student report cards
 
-### Teacher Features
+## Teacher Features
 
 * Teacher dashboard
 * View assigned courses
 * View enrolled students
 * Mark attendance
-* Use Present / Absent / Late attendance statuses
-* Upload grades for assigned courses
-* View course grades
+* Present / Absent / Late attendance statuses
+* Upload grades
+* View grades for assigned courses
 * Export attendance reports
 * Receive real-time announcements
 
-### Student Features
+## Student Features
 
 * Student dashboard
 * View enrolled courses
@@ -59,7 +59,7 @@ The system provides role-based access for Administrators, Teachers, and Students
 * Download report card as PDF
 * Receive real-time announcements
 
-### Analytics
+## Analytics
 
 * Total active students
 * Total courses
@@ -70,16 +70,16 @@ The system provides role-based access for Administrators, Teachers, and Students
 * Student attendance percentage
 * Recent examination score chart
 
-### File Processing
+## File Processing
 
 * Bulk student CSV upload
 * CSV validation
 * Duplicate email detection
 * Duplicate roll-number detection
-* CSV attendance export
+* Attendance CSV export
 * PDF report card generation
 
-### Real-Time Features
+## Real-Time Features
 
 * Socket.IO integration
 * Real-time CSV upload progress
@@ -88,9 +88,9 @@ The system provides role-based access for Administrators, Teachers, and Students
 
 ---
 
-## 2. Technology Stack
+# 2. Technology Stack
 
-### Backend
+## Backend
 
 * Node.js
 * Express.js
@@ -100,7 +100,7 @@ The system provides role-based access for Administrators, Teachers, and Students
 * bcryptjs
 * Socket.IO
 
-### Frontend
+## Frontend
 
 * EJS
 * HTML5
@@ -108,14 +108,14 @@ The system provides role-based access for Administrators, Teachers, and Students
 * JavaScript
 * Chart.js
 
-### File Processing
+## File Processing
 
 * csv-parser
 * json2csv
 * PDFKit
 * Multer
 
-### Security
+## Security
 
 * Helmet
 * CORS
@@ -123,15 +123,15 @@ The system provides role-based access for Administrators, Teachers, and Students
 * Express Mongo Sanitize
 * dotenv
 
-### Documentation
+## Documentation
 
 * Mermaid.js
 
 ---
 
-## 3. Database Design
+# 3. Database Design
 
-The ERP uses MongoDB with Mongoose models.
+The ERP uses MongoDB with Mongoose.
 
 Main collections:
 
@@ -156,153 +156,7 @@ Main collections:
 
 ---
 
-## 4. Entity Relationship Diagram
-
-The following ERD was created using Mermaid.js.
-
-```mermaid
-erDiagram
-
-    USER {
-        ObjectId _id PK
-        string name
-        string email
-        string password
-        string role
-        boolean isActive
-        date createdAt
-        date updatedAt
-    }
-
-    STUDENT {
-        ObjectId _id PK
-        ObjectId userId FK
-        string rollNumber
-        number enrollmentYear
-        string department
-        number semester
-        boolean isActive
-        date createdAt
-        date updatedAt
-    }
-
-    COURSE {
-        ObjectId _id PK
-        string title
-        string description
-        ObjectId teacherId FK
-        boolean isActive
-        date createdAt
-        date updatedAt
-    }
-
-    ATTENDANCE {
-        ObjectId _id PK
-        ObjectId studentId FK
-        ObjectId courseId FK
-        date date
-        string status
-        date createdAt
-        date updatedAt
-    }
-
-    GRADE {
-        ObjectId _id PK
-        ObjectId studentId FK
-        ObjectId courseId FK
-        string examName
-        number score
-        string remarks
-        date createdAt
-        date updatedAt
-    }
-
-    ANNOUNCEMENT {
-        ObjectId _id PK
-        string title
-        string message
-        ObjectId createdBy FK
-        boolean isPublished
-        date publishedAt
-        date createdAt
-        date updatedAt
-    }
-
-    USER ||--o| STUDENT : "has profile"
-
-    USER ||--o{ COURSE : "teaches"
-
-    STUDENT }o--o{ COURSE : "enrolled in"
-
-    STUDENT ||--o{ ATTENDANCE : "has"
-
-    COURSE ||--o{ ATTENDANCE : "records"
-
-    STUDENT ||--o{ GRADE : "receives"
-
-    COURSE ||--o{ GRADE : "contains"
-
-    USER ||--o{ ANNOUNCEMENT : "creates"
-```
-
----
-
-## 5. WebSocket Bulk Upload Sequence Diagram
-
-The bulk student upload process uses HTTP for the file upload and Socket.IO for real-time progress updates.
-
-```mermaid
-sequenceDiagram
-
-    actor Admin as Admin Browser
-    participant Server as Express Server
-    participant Parser as CSV Parser
-    participant DB as MongoDB
-    participant Socket as Socket.IO
-    actor Client as Admin UI
-
-    Admin->>Server: POST /api/upload/students
-    Note over Admin,Server: CSV file + JWT + Socket ID
-
-    Server->>Parser: Read uploaded CSV
-
-    Parser-->>Server: Parsed student rows
-
-    Server->>Socket: Emit bulk-upload-start
-    Socket-->>Client: Display upload started
-
-    loop For each student row
-        Server->>Server: Validate row
-
-        Server->>DB: Check email and roll number
-
-        DB-->>Server: Existing / not existing
-
-        alt Valid and unique student
-            Server->>DB: Create User
-            DB-->>Server: User created
-
-            Server->>DB: Create Student
-            DB-->>Server: Student created
-
-            Server->>Socket: Emit progress
-            Socket-->>Client: Update progress bar
-        else Invalid or duplicate row
-            Server->>Server: Mark row as skipped
-            Server->>Socket: Emit progress
-            Socket-->>Client: Update skipped count
-        end
-    end
-
-    Server->>Socket: Emit bulk-upload-complete
-    Socket-->>Client: Display final results
-
-    Server-->>Admin: HTTP 200 response
-```
-
----
-
-## 6. Project Structure
+# 4. Project Structure
 
 ```text
 school-management-erp/
@@ -365,82 +219,209 @@ school-management-erp/
 │   ├── take-attendance.ejs
 │   └── teacher-dashboard.ejs
 │
-├── .env
 ├── .env.example
 ├── .gitignore
 ├── package.json
+├── package-lock.json
 ├── seed.js
 └── server.js
 ```
 
 ---
 
-## 7. Prerequisites
+# 5. Running the Project on a New Computer
 
-Install the following before running the project:
+This section explains how to set up and run the project on another computer.
 
-* Node.js
-* npm
-* MongoDB Atlas account or local MongoDB installation
-* Git
+The following instructions are intended for a fresh Windows computer using VS Code.
 
-Recommended Node.js version:
+---
 
-```text
-Node.js 20+
+## Step 1 — Install Node.js
+
+Install Node.js from the official Node.js website.
+
+Node.js **20 or later** is recommended.
+
+After installation, open **Command Prompt**, PowerShell, or the VS Code terminal and verify:
+
+```bash
+node -v
+```
+
+Then:
+
+```bash
+npm -v
+```
+
+Both commands should return a version number.
+
+---
+
+## Step 2 — Install Git
+
+Git is required to download the project from GitHub.
+
+Verify Git:
+
+```bash
+git --version
+```
+
+If a version number is displayed, Git is installed correctly.
+
+---
+
+## Step 3 — Clone the GitHub Repository
+
+Open a terminal in the location where you want to keep the project.
+
+Run:
+
+```bash
+git clone https://github.com/Abhyansh616/School-Management-erp.git
+```
+
+Then enter the project directory:
+
+```bash
+cd School-Management-erp
 ```
 
 ---
 
-## 8. Environment Variables
+## Step 4 — Open the Project in VS Code
 
-Create a `.env` file in the project root.
+From inside the project directory, run:
 
-Example:
-
-```env
-PORT=3000
-
-MONGO_URI=your_mongodb_connection_string
-
-JWT_SECRET=your_jwt_secret
-
-FRONTEND_URL=http://localhost:3000
+```bash
+code .
 ```
 
-Never commit the actual `.env` file containing private credentials.
+Alternatively:
 
-The `.env.example` file should contain placeholder values only.
+1. Open VS Code.
+2. Select **File → Open Folder**.
+3. Select the `School-Management-erp` folder.
+
+The project should now appear in the VS Code Explorer.
 
 ---
 
-## 9. Installation
+# 6. Install Project Dependencies
 
-Clone the repository and enter the project directory.
+Open the VS Code terminal.
 
-Install dependencies:
+Make sure the terminal is inside the project folder.
+
+Run:
 
 ```bash
 npm install
 ```
 
+This installs all packages listed in `package.json`.
+
+The project dependencies include Express, Mongoose, EJS, JWT, Socket.IO, Chart.js-related frontend support, CSV processing, PDFKit, security middleware, and other required packages.
+
 ---
 
-## 10. Database Configuration
+# 7. Configure MongoDB
 
-Configure the MongoDB connection string in `.env`:
+The application requires MongoDB to store users, students, courses, attendance, grades, and announcements.
 
-```env
-MONGO_URI=your_mongodb_connection_string
+There are two supported approaches.
+
+### Option A — MongoDB Atlas
+
+MongoDB Atlas is recommended if the project is being run on another computer without a local MongoDB installation.
+
+Create a MongoDB Atlas account and create a database cluster.
+
+Then:
+
+1. Open the MongoDB Atlas dashboard.
+2. Select the database cluster.
+3. Select **Connect**.
+4. Select **Drivers / Connect your application**.
+5. Copy the MongoDB connection string.
+6. Replace the username, password, cluster information, and database name as required.
+
+The connection string will look similar to:
+
+```text
+mongodb+srv://<username>:<password>@<cluster-url>/<database-name>?retryWrites=true&w=majority
 ```
 
-The application connects to MongoDB when the server starts.
+Do not copy the example literally. Use the connection string generated for your own MongoDB Atlas database.
+
+### Important MongoDB Atlas Settings
+
+If using MongoDB Atlas, make sure:
+
+* A database user has been created.
+* The database user's username and password are correct.
+* The computer's IP address is allowed in the Atlas network access settings.
+* The database connection string is correct.
+
+For temporary development/testing, Atlas can be configured to allow the required development machine to connect. For production use, use appropriate network restrictions.
 
 ---
 
-## 11. Create the Initial Super Admin
+## Step 8 — Create the `.env` File
 
-The project includes a seed script for creating the initial administrator.
+The repository contains:
+
+```text
+.env.example
+```
+
+Create a new file in the project root named:
+
+```text
+.env
+```
+
+The `.env` file should be located next to `server.js` and `package.json`.
+
+Example:
+
+```env
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_random_secret_key
+FRONTEND_URL=http://localhost:3000
+```
+
+### Example
+
+```env
+PORT=3000
+MONGO_URI=mongodb+srv://username:password@cluster-url/school_erp
+JWT_SECRET=replace_with_a_long_random_secret
+FRONTEND_URL=http://localhost:3000
+```
+
+Use your own MongoDB connection string and your own JWT secret.
+
+### Security Warning
+
+**Never commit `.env` to GitHub.**
+
+The `.env` file may contain:
+
+* MongoDB credentials
+* Database connection information
+* JWT secret
+
+The repository should only contain `.env.example` with placeholder values.
+
+---
+
+# 9. Seed the Initial Admin Account
+
+The project includes a seed script that creates the initial development administrator.
 
 Run:
 
@@ -448,9 +429,9 @@ Run:
 npm run seed
 ```
 
-The seed script creates the initial development administrator if one does not already exist.
+If the database connection is configured correctly, the seed script will create the development admin account if it does not already exist.
 
-Development seed account:
+Development login:
 
 ```text
 Email: admin@schoolerp.com
@@ -458,27 +439,31 @@ Password: Admin@12345
 Role: admin
 ```
 
-For production use, the default development password should be changed.
+These credentials are intended for development/testing.
 
-Running the seed script again does not create a duplicate administrator.
+For a real production deployment, change the password and use appropriate credentials.
+
+Running the seed command again will not create a duplicate admin if the account already exists.
 
 ---
 
-## 12. Run the Application
+# 10. Start the Application
 
-### Development mode
+For development mode, run:
 
 ```bash
 npm run dev
 ```
 
-### Production/start mode
+The application uses Nodemon, so the server automatically restarts when relevant files are changed.
+
+Alternatively, start the application normally with:
 
 ```bash
 npm start
 ```
 
-The application runs by default at:
+When the server starts successfully, it should be available at:
 
 ```text
 http://localhost:3000
@@ -486,68 +471,177 @@ http://localhost:3000
 
 ---
 
-## 13. Available Pages
+# 11. Open the Application
 
-### Login
+Open a browser and visit:
 
 ```text
-GET /login
+http://localhost:3000/login
 ```
 
-### Admin Dashboard
+You should see the School Management ERP login page.
+
+Use the seeded admin credentials:
 
 ```text
-GET /admin-dashboard
+Email: admin@schoolerp.com
+Password: Admin@12345
 ```
 
-### Teacher Dashboard
+After successful login, the admin can access the admin functionality.
+
+---
+
+# 12. Main Application Pages
+
+## Login
 
 ```text
-GET /teacher-dashboard
+http://localhost:3000/login
 ```
 
-### Student Dashboard
+## Admin Dashboard
 
 ```text
-GET /student-dashboard
+http://localhost:3000/admin-dashboard
 ```
 
-### Attendance
+## Teacher Dashboard
 
 ```text
-GET /take-attendance
+http://localhost:3000/teacher-dashboard
 ```
 
-### Report Card
+## Student Dashboard
 
 ```text
-GET /report-card
+http://localhost:3000/student-dashboard
 ```
 
-### Admin Bulk Upload
+## Attendance
 
 ```text
-GET /admin/bulk-upload
+http://localhost:3000/take-attendance
 ```
 
-### Announcements
+## Report Card
 
 ```text
-GET /announcements
+http://localhost:3000/report-card
+```
+
+## Admin Bulk Upload
+
+```text
+http://localhost:3000/admin/bulk-upload
+```
+
+## Announcements
+
+```text
+http://localhost:3000/announcements
 ```
 
 ---
 
-## 14. Main API Endpoints
+# 13. First-Time Testing Flow
 
-### Authentication
+After starting the project, the recommended testing order is:
+
+### 1. Login as Admin
+
+Open:
+
+```text
+http://localhost:3000/login
+```
+
+Use:
+
+```text
+admin@schoolerp.com
+```
+
+and:
+
+```text
+Admin@12345
+```
+
+### 2. Open Admin Dashboard
+
+Verify that the dashboard loads and displays school analytics.
+
+### 3. Create/Manage Courses
+
+Use the admin functionality to create courses and assign teachers.
+
+### 4. Add Students
+
+Students can be added through the supported student registration/bulk-upload functionality.
+
+### 5. Test Teacher Functionality
+
+Login using a teacher account and verify:
+
+* Assigned courses
+* Enrolled students
+* Attendance
+* Grades
+* Attendance export
+
+### 6. Test Student Functionality
+
+Login using a student account and verify:
+
+* Student dashboard
+* Enrolled courses
+* Attendance
+* Attendance percentage
+* Grades
+* Report card
+* PDF report card
+
+### 7. Test Announcements
+
+Create an announcement as an authorized user and verify that it appears through the real-time announcement system.
+
+### 8. Test Bulk Upload
+
+From the admin bulk upload page, upload a CSV file containing student records and verify the real-time upload progress.
+
+---
+
+# 14. Bulk Student CSV Format
+
+The bulk upload feature accepts CSV files with the following columns:
+
+```text
+name,email,password,rollNumber,enrollmentYear,department,semester
+```
+
+Example:
+
+```csv
+name,email,password,rollNumber,enrollmentYear,department,semester
+Student One,student1@example.com,password123,STU001,2026,Computer Science,6
+Student Two,student2@example.com,password123,STU002,2026,Computer Science,6
+```
+
+The system validates the uploaded records and checks for duplicate email addresses and roll numbers.
+
+---
+
+# 15. Main API Endpoints
+
+## Authentication
 
 ```text
 POST /api/auth/register
 POST /api/auth/login
 ```
 
-### Courses
+## Courses
 
 ```text
 POST /api/courses
@@ -555,61 +649,51 @@ GET /api/courses
 GET /api/courses/:courseId
 ```
 
-### Attendance
+## Attendance
 
 ```text
 POST /api/attendance/:courseId
-
 GET /api/attendance/course/:courseId
-
 GET /api/attendance/student/my-attendance
-
 GET /reports/attendance/:courseId/export
 ```
 
-### Grades
+## Grades
 
 ```text
 POST /api/grades/:courseId
-
 GET /api/grades/course/:courseId
-
 GET /api/grades/student/my-report-card
-
 GET /api/grades/student/my-report-card/pdf
-
 GET /api/grades/student/:studentId/report-card
 ```
 
-### Dashboards
+## Dashboards
 
 ```text
 GET /api/dashboard/admin
-
 GET /api/dashboard/teacher
-
 GET /api/dashboard/student
 ```
 
-### Bulk Student Upload
+## Bulk Student Upload
 
 ```text
 POST /api/upload/students
 ```
 
-### Announcements
+## Announcements
 
 ```text
 GET /api/announcements
-
 POST /api/announcements
 ```
 
 ---
 
-## 15. Role-Based Access Control
+# 16. Role-Based Access Control
 
-### Admin
+## Admin
 
 The administrator has complete access to school management functionality.
 
@@ -625,9 +709,9 @@ Admin capabilities include:
 * Export attendance
 * View report cards
 
-### Teacher
+## Teacher
 
-Teachers can only operate on courses assigned to them.
+Teachers can operate only on courses assigned to them.
 
 Teacher capabilities include:
 
@@ -641,7 +725,7 @@ Teacher capabilities include:
 
 Teachers cannot modify attendance or grades belonging to courses assigned to another teacher.
 
-### Student
+## Student
 
 Students have access only to their own academic information.
 
@@ -649,7 +733,7 @@ Student capabilities include:
 
 * View enrolled courses
 * View personal attendance
-* View personal attendance percentage
+* View attendance percentage
 * View personal report card
 * Download personal report card PDF
 * View examination scores
@@ -657,15 +741,17 @@ Student capabilities include:
 
 ---
 
-## 16. Attendance System
+# 17. Attendance System
 
-Teachers select attendance for each enrolled student using:
+Teachers can mark attendance for students enrolled in their assigned courses.
 
-* Present
-* Absent
-* Late
+Available statuses:
 
-Attendance is submitted in bulk through the attendance interface.
+```text
+Present
+Absent
+Late
+```
 
 Attendance records contain:
 
@@ -678,9 +764,11 @@ status
 
 The system also calculates attendance percentages for dashboards and reports.
 
+Attendance reports can be exported as CSV.
+
 ---
 
-## 17. Grade and Report Card System
+# 18. Grade and Report Card System
 
 Grades contain:
 
@@ -698,7 +786,7 @@ The system also generates a downloadable PDF report card using PDFKit.
 
 ---
 
-## 18. CSV Attendance Export
+# 19. CSV Attendance Export
 
 Teachers and administrators can export attendance records using:
 
@@ -706,7 +794,7 @@ Teachers and administrators can export attendance records using:
 GET /reports/attendance/:courseId/export
 ```
 
-The exported CSV contains information including:
+The exported CSV contains information such as:
 
 * Student name
 * Student email
@@ -719,110 +807,47 @@ The exported CSV contains information including:
 
 ---
 
-## 19. Bulk Student Upload
+# 20. Real-Time Bulk Upload
 
 Administrators can upload multiple students using a CSV file.
 
-Required CSV columns:
+The bulk upload process uses:
 
-```text
-name,email,password,rollNumber,enrollmentYear,department,semester
-```
+* Multer for file upload
+* csv-parser for CSV processing
+* MongoDB for storing users and student profiles
+* Socket.IO for real-time progress updates
 
-Example:
-
-```csv
-name,email,password,rollNumber,enrollmentYear,department,semester
-Student One,student1@example.com,password123,STU001,2026,Computer Science,6
-Student Two,student2@example.com,password123,STU002,2026,Computer Science,6
-```
-
-The system:
-
-1. Receives the CSV file.
-2. Parses the CSV.
-3. Validates each row.
-4. Checks for duplicate email addresses.
-5. Checks for duplicate roll numbers.
-6. Creates User records.
-7. Creates Student records.
-8. Reports imported and skipped records.
-9. Emits real-time progress through Socket.IO.
+The interface displays upload progress while the CSV is being processed.
 
 ---
 
-## 20. Real-Time Announcements
+# 21. Real-Time Announcements
 
-Administrators can publish school announcements.
+The ERP uses Socket.IO to provide real-time school announcements.
 
-When an announcement is published:
-
-1. The announcement is stored in MongoDB.
-2. The server retrieves the populated announcement.
-3. Socket.IO broadcasts the announcement.
-4. Connected users receive the announcement immediately.
-5. The announcement appears on the page without requiring a refresh.
+Authorized users can publish announcements, and connected users can receive updates without manually refreshing the page.
 
 ---
 
-## 21. Security Measures
+# 22. Analytics Dashboard
 
-The application includes several security mechanisms:
-
-### Helmet
-
-Provides HTTP security headers.
-
-### CORS
-
-Controls cross-origin requests.
-
-### Rate Limiting
-
-Limits excessive API requests.
-
-### Mongo Sanitization
-
-Helps prevent MongoDB operator injection.
-
-### JWT
-
-Protects authenticated API endpoints.
-
-### bcrypt
-
-Hashes user passwords before storing them.
-
-### Role Middleware
-
-Restricts endpoints according to user roles.
-
-### ABAC
-
-Checks ownership of resources, such as ensuring teachers can only modify their assigned courses.
-
-### Environment Variables
-
-Sensitive configuration is stored outside source code using `.env`.
-
----
-
-## 22. Dashboard Analytics
+The project provides separate dashboards according to the logged-in user's role.
 
 ### Admin Dashboard
 
-Uses MongoDB aggregation to calculate:
+Displays:
 
-* Active student count
+* Total active students
 * Total courses
-* School-wide attendance
-* Attendance distribution
+* Average school attendance
+* Attendance breakdown
 
 ### Teacher Dashboard
 
 Displays:
 
-* Assigned course count
+* Assigned courses
 * Passing rate
 * Average score
 * Course information
@@ -831,49 +856,138 @@ Displays:
 
 Displays:
 
-* Personal attendance percentage
+* Student information
 * Enrolled courses
+* Attendance percentage
 * Recent examination scores
 
-Chart.js is used to visualize analytics.
+Charts are displayed using Chart.js.
 
 ---
 
-## 23. Real-Time Architecture
+# 23. Documentation and Diagrams
 
-Socket.IO is initialized on the HTTP server.
+The `docs/` directory contains the project diagrams.
 
-The server provides real-time communication for:
+## ER Diagram
 
-* Bulk upload progress
-* Bulk upload completion
-* New announcements
+```text
+docs/erd.md
+```
 
-The client establishes a WebSocket connection and listens for server events.
+The ER diagram documents relationships between:
+
+* User
+* Student
+* Course
+* Attendance
+* Grade
+* Announcement
+
+## WebSocket Sequence Diagram
+
+```text
+docs/sequence-diagram.md
+```
+
+The sequence diagram explains the flow of the CSV bulk-upload process and real-time Socket.IO progress updates.
+
+Both diagrams are written using Mermaid.js.
 
 ---
 
-## 24. Development Commands
+# 24. Troubleshooting
 
-Install dependencies:
+## Problem: `npm` is not recognized
 
-```bash
-npm install
-```
+Make sure Node.js is installed correctly.
 
-Start development server:
+Check:
 
 ```bash
-npm run dev
+node -v
+npm -v
 ```
 
-Start application:
+If these commands do not work, reinstall Node.js and restart VS Code.
+
+---
+
+## Problem: `git` is not recognized
+
+Install Git and restart the terminal.
+
+Check:
 
 ```bash
-npm start
+git --version
 ```
 
-Create initial administrator:
+---
+
+## Problem: MongoDB connection failed
+
+Check the following:
+
+1. `MONGO_URI` exists in `.env`.
+2. The MongoDB connection string is correct.
+3. The MongoDB username is correct.
+4. The MongoDB password is correct.
+5. MongoDB Atlas allows the computer's IP address.
+6. The database user has the required permissions.
+7. There are no accidental spaces or quotation marks in the connection string.
+
+---
+
+## Problem: `.env` is not working
+
+Make sure the file is named exactly:
+
+```text
+.env
+```
+
+Not:
+
+```text
+.env.txt
+```
+
+The `.env` file must be in the project root:
+
+```text
+School-Management-erp/
+├── .env
+├── package.json
+├── server.js
+└── ...
+```
+
+---
+
+## Problem: Port 3000 is already in use
+
+Another application may already be using port 3000.
+
+Stop the other application or change the port in `.env`:
+
+```env
+PORT=3001
+```
+
+Then open:
+
+```text
+http://localhost:3001
+```
+
+---
+
+## Problem: Seed command fails
+
+First verify that MongoDB is connected and that `MONGO_URI` is correct.
+
+Then run:
 
 ```bash
 npm run seed
@@ -881,33 +995,111 @@ npm run seed
 
 ---
 
-## 25. Project Objective
+## Problem: Page does not load
 
-The objective of this project is to implement a complete School Management ERP demonstrating:
+Make sure the server is running:
 
-* Relational-style database modeling using MongoDB references
-* Authentication
-* RBAC
-* ABAC
-* Course management
-* Attendance management
-* Grade management
-* Report cards
-* Dashboard analytics
-* MongoDB aggregation
-* CSV processing
-* PDF generation
-* Real-time WebSocket communication
-* Real-time announcements
-* Secure Express.js application design
-* UML/system design documentation
+```bash
+npm run dev
+```
+
+Then check:
+
+```text
+http://localhost:3000
+```
+
+Also check the VS Code terminal for server or MongoDB errors.
 
 ---
 
-## 26. Conclusion
+# 25. Important Security Notes
 
-The School Management ERP provides a centralized platform for managing students, teachers, courses, attendance, grades, reports, announcements, and school analytics.
+* Do not commit `.env`.
+* Do not publish real MongoDB credentials.
+* Do not publish real JWT secrets.
+* Change development/demo passwords before production use.
+* Use appropriate MongoDB network restrictions for production.
+* Use strong secrets for JWT authentication.
+* Do not use development credentials in a production environment.
 
-The project combines a secure Express.js backend with MongoDB, an EJS-based frontend, real-time Socket.IO communication, Chart.js analytics, CSV processing, and PDF report generation.
+---
 
-The system demonstrates role-specific access control and resource ownership checks to ensure that administrators, teachers, and students can only perform actions appropriate to their responsibilities.
+# 26. Quick Setup Summary
+
+For someone who already has Node.js, Git, and MongoDB ready, the basic setup is:
+
+```bash
+git clone https://github.com/Abhyansh616/School-Management-erp.git
+cd School-Management-erp
+npm install
+```
+
+Create `.env`:
+
+```env
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_random_secret
+FRONTEND_URL=http://localhost:3000
+```
+
+Then:
+
+```bash
+npm run seed
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000/login
+```
+
+Development admin:
+
+```text
+Email: admin@schoolerp.com
+Password: Admin@12345
+```
+
+---
+
+# 27. Repository
+
+GitHub:
+
+https://github.com/Abhyansh616/School-Management-erp
+
+---
+
+# 28. Project Status
+
+This project is developed as a School Management ERP academic/final assignment demonstrating:
+
+* Full-stack web development
+* MongoDB data modeling
+* Authentication
+* RBAC and ABAC
+* Course management
+* Attendance management
+* Grade management
+* Analytics
+* CSV processing
+* PDF generation
+* WebSocket communication
+* Real-time announcements
+* Database relationships
+* ER and sequence diagrams
+* API development
+* Security middleware
+
+---
+
+## Author
+
+**Abhyansh Sinha**
+
+School Management ERP
+B.Tech CSE
